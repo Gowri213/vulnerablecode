@@ -139,8 +139,8 @@ class OvalParser:
             version_range = operand + version
             version_range = version_range.replace("only", "").strip()
 
-            # 0: is default epoch, remove it
-            version_range = version_range.replace("0:", "").strip()
+            # 0: is default epoch, remove only if it appears as a leading epoch prefix
+            version_range = re.sub(r"^([<>=!]+\s*)?0:", r"\1", version_range).strip()
             x_version_ranges = {
                 "<2.0.x": "2.0.x",
                 "<3.x": "3.x",

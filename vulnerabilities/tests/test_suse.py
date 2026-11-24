@@ -114,6 +114,20 @@ class TestSUSEOvalParser(unittest.TestCase):
         assert self.parsed_oval.get_version_range_from_state(state_1) == exp_range_1
         assert self.parsed_oval.get_version_range_from_state(state_2) == exp_range_2
 
+    def test_get_version_range_from_state_epochs(self):
+        from vulnerabilities.lib_oval import OvalState
+
+        def make_state(version_text: str, operation: str = "less than") -> OvalState:
+            elem = ET.Element("state")
+            evr = ET.SubElement(elem, "evr", {"operation": operation})
+            evr.text = version_text
+            return OvalState(elem)
+
+        assert self.parsed_oval.get_version_range_from_state(make_state("0:1.2.3")) == "<1.2.3"
+        assert self.parsed_oval.get_version_range_from_state(make_state("10:1.2.3")) == "<10:1.2.3"
+        assert self.parsed_oval.get_version_range_from_state(make_state("20:1.2.3")) == "<20:1.2.3"
+        assert self.parsed_oval.get_version_range_from_state(make_state("1.0:2")) == "<1.0:2"
+
     def test_get_urls_from_definition(self):
 
         def1_urls = {
